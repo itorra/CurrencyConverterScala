@@ -9,6 +9,11 @@ object Program {
     println("hello")
     val parser:BOIParser = new BOIParser
     parser.downloadFile()
-    parser.buildMap()
+    val rc: RateCalculator = new RateCalculator(parser.buildMap())
+//    rc.showMotherFucker()
+
+    val num = rc.calcRate("Lebanon","USA",20)
+    print(num)
+
   }
 }

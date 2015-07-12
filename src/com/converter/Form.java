@@ -20,8 +20,8 @@ public class Form {
     private JTextField toText;
     private JButton convertButton;
     private JButton switchButtaon;
-    private JList toList;
-    private JList fromList;
+    private JComboBox toBox;
+    private JComboBox fromBox;
     private DefaultListModel currencies;
 
 
@@ -31,8 +31,8 @@ public class Form {
         westPanel = new JPanel();
         eastPanel = new JPanel();
         midPanel = new JPanel();
-        toList = new JList(countries);
-        fromList = new JList(countries);
+        toBox = new JComboBox(countries);
+        fromBox = new JComboBox(countries);
         fromText = new JTextField("1");
         toText = new JTextField();
         convertButton = new JButton("Convert");
@@ -42,13 +42,13 @@ public class Form {
     private void initForm() {
         //// Init Panels
         // East
-        initLists(toList);
+        initLists(toBox);
         eastPanel.setLayout(new FlowLayout());
-        eastPanel.add(toList);
+        eastPanel.add(toBox);
         // West
-        initLists(fromList);
+        initLists(fromBox);
         westPanel.setLayout(new FlowLayout());
-        westPanel.add(fromList);
+        westPanel.add(fromBox);
         // Mid
         midPanel.setLayout(new GridLayout(2,2));
         midPanel.add(fromText);
@@ -69,11 +69,14 @@ public class Form {
         mainFrame.add(BorderLayout.CENTER,midPanel);
     }
 
-    private void initLists(JList list) {
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    private void initLists(JComboBox list) {
+        Dimension size = list.getMinimumSize();
+        size.height = 40;
+        System.out.println(size.height + "  " + size.width);
+        list.setMinimumSize(size);
+        list.setFont(new Font("Halvetica", Font.PLAIN, 22));
         list.setSelectedIndex(0);
-        list.setVisibleRowCount(3);
-        list.setCellRenderer(new IconListRenderer(createIconMap()));
+        list.setRenderer(new IconListRenderer(createIconMap()));
     }
 
 
