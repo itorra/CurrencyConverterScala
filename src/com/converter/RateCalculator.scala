@@ -25,7 +25,7 @@ class RateCalculator(map: Map[String,Currency]) extends RateCalculatable {
   
   def countryToIndex(country: String) : Int = {
     var retVal :Int = 0
-    var num: Int =1 // 
+    var num: Int =1 //
     if (!country.equals("Israel")) {
       map.values.foreach(curr => {
         if (curr.country.equals(country)){

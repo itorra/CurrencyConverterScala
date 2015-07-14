@@ -1,122 +1,114 @@
 package com.converter;
 
 import javax.swing.*;
+import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by ido on 26/06/15.
  */
-public class Form {
-
+public class Form implements ActionListener{
+    private String countries[];
+    private String labels[];
     private JFrame mainFrame;
-    private JPanel westPanel;
-    private JPanel eastPanel;
     private JPanel midPanel;
+    private JPanel northPanel;
+    private JPanel southPanel;
     private JTextField fromText;
     private JTextField toText;
     private JButton convertButton;
-    private JButton switchButtaon;
-    private JComboBox toBox;
-    private JComboBox fromBox;
-    private DefaultListModel currencies;
-
+    private JButton switchButton;
+    private JComboBox<String> toBox;
+    private JComboBox<String> fromBox;
+    private BOIParser parser;
+    private RateCalculatable calc;
+    private int index = 0;
 
     public Form() {
-        String countries[] = {"Australia","Great Britain","Norway","Canada","Israel","South Africa","Denmark","Japan","Sweden","Egypt","Jordan","Switzerland","Euro","Lebanon","USA"};
+        parser = new BOIParser();
+        calc = new RateCalculator(parser.buildMap());
+        countries = parser.getCountries();
+        labels = parser.getLabels();
         mainFrame = new JFrame();
-        westPanel = new JPanel();
-        eastPanel = new JPanel();
+        northPanel = new JPanel();
+        southPanel = new JPanel();
         midPanel = new JPanel();
-        toBox = new JComboBox(countries);
-        fromBox = new JComboBox(countries);
+        toBox = new JComboBox(labels);
+        fromBox = new JComboBox(labels);
         fromText = new JTextField("1");
         toText = new JTextField();
         convertButton = new JButton("Convert");
-        switchButtaon = new JButton("Switch");
+        switchButton = new JButton();
     }
 
     private void initForm() {
-        //// Init Panels
-        // East
-        initLists(toBox);
-        eastPanel.setLayout(new FlowLayout());
-        eastPanel.add(toBox);
-        // West
+        //Init comboBoxes
         initLists(fromBox);
-        westPanel.setLayout(new FlowLayout());
-        westPanel.add(fromBox);
+        initLists(toBox);
+        //North
+        northPanel.setLayout(new GridLayout(1, 3));
+        northPanel.setPreferredSize(new Dimension(650, 35));
+        northPanel.add(fromBox);
+        northPanel.add(switchButton);
+        northPanel.add(toBox);
         // Mid
-        midPanel.setLayout(new GridLayout(2,2));
+        midPanel.setLayout(new GridLayout(1, 3));
         midPanel.add(fromText);
         midPanel.add(toText);
-        midPanel.add(convertButton);
-        midPanel.add(switchButtaon);
-
+        //South
+        southPanel.setLayout(new GridLayout(1, 3));
+        southPanel.add(convertButton);
         //// Init MainFrame
-        mainFrame.setSize(400, 400);
-        mainFrame.setLayout(new BorderLayout());
+        mainFrame.setSize(650, 300);
+        mainFrame.setMinimumSize(new Dimension(650, 300));
+        mainFrame.setLayout(new GridLayout(3, 1));
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 System.exit(0);
             }
         });
-        mainFrame.add(BorderLayout.WEST,westPanel);
-        mainFrame.add(BorderLayout.EAST,eastPanel);
-        mainFrame.add(BorderLayout.CENTER,midPanel);
+        mainFrame.add(northPanel);
+        mainFrame.add(midPanel);
+        mainFrame.add(southPanel);
+        //Buttons
+        switchButton.setIcon(new ImageIcon("graphics/swap_32.png"));
+        switchButton.setPreferredSize(new Dimension(32, 32));
+        //Listeners
+        fromBox.addActionListener(this);
+        toBox.addActionListener(this);
+        switchButton.addActionListener(this);
+        convertButton.addActionListener(this);
+        // Text-Box
+        toText.setEditable(false);
     }
 
     private void initLists(JComboBox list) {
-        Dimension size = list.getMinimumSize();
-        size.height = 40;
-        System.out.println(size.height + "  " + size.width);
-        list.setMinimumSize(size);
-        list.setFont(new Font("Halvetica", Font.PLAIN, 22));
-        list.setSelectedIndex(0);
+        list.setFont(new Font("Halvetica", Font.PLAIN, 18));
+        list.setSelectedIndex(index);
+        index = 11;
         list.setRenderer(new IconListRenderer(createIconMap()));
+        list.setUI(new MetalComboBoxUI());
     }
 
 
     private Map<String,Icon> createIconMap() {
         Map<String,Icon> map = new HashMap<String, Icon>();
-        String countries[] = {"Australia","Great Britain","Norway","Canada","Israel","South Africa","Denmark","Japan","Sweden","Egypt","Jordan","Switzerland","Euro","Lebanon","USA"};
+        int i=0;
         for (String s: countries) {
-            Icon i = new ImageIcon("flag/"+s+".png");
-            map.put(s,i);
+            Icon ic = new ImageIcon("flag/"+s+".png");
+            map.put(labels[i++],ic);
         }
         return map;
     }
 
 
-//    private Object[] prepareList() {
-//        currencies = new DefaultListModel();
-//        ImageIcon eur = new ImageIcon("graphics/euro.gif");
-//        JLabel l = new JLabel(eur);
-//        currencies.addElement("USD");
-//        currencies.addElement(l);
-//        currencies.addElement("YEN");
-//        currencies.addElement("GBP");
-
-//        Icon dollarI = new ImageIcon("graphics/Dollar.gif");
-//        Icon euroI = new ImageIcon("graphics/Euro.gif");
-//
-//        JLabel dollarL = new JLabel("USD", dollarI, JLabel.LEFT);
-//        JLabel euroL = new JLabel("EUR",euroI, JLabel.LEFT);
-//
-//        JPanel dollarP = new JPanel(new FlowLayout(FlowLayout.LEFT));
-//        JPanel euroP = new JPanel(new FlowLayout(FlowLayout.LEFT));
-//
-//        dollarP.add(dollarL);
-//        euroP.add(euroL);
-//
-//        Object[] panels = {dollarP, euroP};
-//
-//
-//        return panels;
-//    }
 
     public void start (){
         initForm();
@@ -126,5 +118,32 @@ public class Form {
     public static void main(String[] args) {
         Form f = new Form();
         f.start();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent evt) {
+        Object eventSource = evt.getSource();
+        if(eventSource == switchButton) {
+            //TODO: automate convert
+            int fromIndex = fromBox.getSelectedIndex();
+            int toIndex =   toBox.getSelectedIndex();
+            fromBox.setSelectedIndex(toIndex);
+            toBox.setSelectedIndex(fromIndex);
+            convertButtonEvent();
+        }
+        else if(eventSource == convertButton) {
+            convertButtonEvent();
+        }
+    }
+
+    void convertButtonEvent() {
+        int fromIndex = fromBox.getSelectedIndex();
+        int toIndex =   toBox.getSelectedIndex();
+        String fromCountry = countries[fromIndex];
+        String toCountry = countries[toIndex];
+        double valToConvert = Double.parseDouble(fromText.getText());
+        double res = calc.calcRate(fromCountry, toCountry, valToConvert);
+        System.out.println(valToConvert + "  " + fromCountry + "  to " + toCountry + "  " + res);
+        toText.setText(new DecimalFormat("#0.00").format(res));
     }
 }

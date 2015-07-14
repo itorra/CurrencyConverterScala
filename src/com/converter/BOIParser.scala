@@ -13,12 +13,10 @@ import sys.process._
 class BOIParser {
   val boiXml: String = "http://www.boi.org.il/currency.xml"
   var xmlFile: String = "data.xml"
+  var map:Map[String, Currency] = Map()
 
-
-
-    def buildMap (): Map[String,Currency] = {
+  def buildMap (): Map[String,Currency] = {
     val src = XML.loadFile(xmlFile)
-    var map:Map[String, Currency] = Map()
     for (curr<-src\\"CURRENCY"){
       val name = (curr\\"NAME").text
       val unit = (curr\\"UNIT").text.toInt
@@ -26,10 +24,32 @@ class BOIParser {
       val country = (curr\\"COUNTRY").text
       val rate = (curr\\"RATE").text.toDouble
       val change = (curr\\"CHANGE").text.toDouble
-      val c = new Currency(name,unit,code,country,rate,change)
-      map += (code -> c)
+      val currentCourency = new Currency(name,unit,code,country,rate,change)
+      map += (code -> currentCourency)
     }
     map
+  }
+
+  def getCountries(): Array[String] = {
+    val countries: Array[String] = new Array[String](map.size+1)
+    countries(0) = "Israel"
+    var i = 1
+    map.values.foreach(curr => {
+      countries(i) = curr.country
+      i = i+1
+    })
+    countries
+  }
+
+  def getLabels(): Array[String] = {
+    val labels: Array[String] = new Array[String](map.size+1)
+    labels(0) = "Israel Shekel"
+    var i = 1
+    map.values.foreach(curr => {
+      labels(i) = curr.country + " " + curr.name
+      i = i+1
+    })
+    labels
   }
 
   def downloadFile(): Unit = {
