@@ -10,13 +10,16 @@ import sys.process._
 /**
  * Created by ido on 15/06/15.
  */
-class BOIParser {
+class BOIParser extends Runnable {
   val boiXml: String = "http://www.boi.org.il/currency.xml"
   var xmlFile: String = "data.xml"
   var map:Map[String, Currency] = Map()
+  var date: String = "An error occured reading file"
 
   def buildMap (): Map[String,Currency] = {
     val src = XML.loadFile(xmlFile)
+    date = (src\\"LAST_UPDATE").text
+    println("Updated to:  " + date)
     for (curr<-src\\"CURRENCY"){
       val name = (curr\\"NAME").text
       val unit = (curr\\"UNIT").text.toInt
@@ -29,6 +32,8 @@ class BOIParser {
     }
     map
   }
+
+  def getLastUpdated(): String = date
 
   def getCountries(): Array[String] = {
     val countries: Array[String] = new Array[String](map.size+1)
@@ -54,7 +59,12 @@ class BOIParser {
 
   def downloadFile(): Unit = {
     new URL(boiXml) #> new File(xmlFile) !!
-    //TODO - To check if download was ok
-  }
 
+  }
+  var time: Int = 0
+  override def run(): Unit = {
+    println(time)
+    time = time+ 1
+//    Thread.sleep(1000)
+  }
 }

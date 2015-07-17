@@ -14,6 +14,7 @@ import java.util.Map;
 /**
  * Created by ido on 26/06/15.
  */
+
 public class Form implements ActionListener{
     private String countries[];
     private String labels[];
@@ -27,15 +28,16 @@ public class Form implements ActionListener{
     private JButton switchButton;
     private JComboBox<String> toBox;
     private JComboBox<String> fromBox;
-    private BOIParser parser;
+    private Thread parser;
     private RateCalculatable calc;
-    private int index = 0;
+    private int index = 11;
 
     public Form() {
-        parser = new BOIParser();
-        calc = new RateCalculator(parser.buildMap());
-        countries = parser.getCountries();
-        labels = parser.getLabels();
+        parser = new Thread(new BOIParser());
+        parser.start();
+//        calc = new RateCalculator(parser.buildMap());
+//        countries = parser.getCountries();
+//        labels = parser.getLabels();
         mainFrame = new JFrame();
         northPanel = new JPanel();
         southPanel = new JPanel();
@@ -53,8 +55,9 @@ public class Form implements ActionListener{
         initLists(fromBox);
         initLists(toBox);
         //North
-        northPanel.setLayout(new GridLayout(1, 3));
-        northPanel.setPreferredSize(new Dimension(650, 35));
+//        northPanel.setLayout(new GridLayout(1, 3));
+        northPanel.setLayout(new FlowLayout());
+//        northPanel.setPreferredSize(new Dimension(650, 35));
         northPanel.add(fromBox);
         northPanel.add(switchButton);
         northPanel.add(toBox);
@@ -66,8 +69,10 @@ public class Form implements ActionListener{
         southPanel.setLayout(new GridLayout(1, 3));
         southPanel.add(convertButton);
         //// Init MainFrame
-        mainFrame.setSize(650, 300);
-        mainFrame.setMinimumSize(new Dimension(650, 300));
+        int heightWin = 200, widthWin = 570;
+        mainFrame.setSize(widthWin,heightWin);
+        mainFrame.setMinimumSize(new Dimension(widthWin,heightWin));
+        mainFrame.setMaximumSize(new Dimension(widthWin,heightWin));
         mainFrame.setLayout(new GridLayout(3, 1));
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
@@ -77,9 +82,12 @@ public class Form implements ActionListener{
         mainFrame.add(northPanel);
         mainFrame.add(midPanel);
         mainFrame.add(southPanel);
+        mainFrame.setTitle("Marco Esquandols");
+//        mainFrame.setfocus
         //Buttons
         switchButton.setIcon(new ImageIcon("graphics/swap_32.png"));
         switchButton.setPreferredSize(new Dimension(32, 32));
+        switchButton.setPreferredSize(new Dimension(50,50));
         //Listeners
         fromBox.addActionListener(this);
         toBox.addActionListener(this);
@@ -87,12 +95,17 @@ public class Form implements ActionListener{
         convertButton.addActionListener(this);
         // Text-Box
         toText.setEditable(false);
+        fromText.setFont(new Font("Halvetica",Font.BOLD,14));
+        toText.setFont(new Font("Halvetica",Font.BOLD,14));
+        fromText.setHorizontalAlignment(JTextField.CENTER);
+        toText.setHorizontalAlignment(JTextField.CENTER);
+        fromText.requestFocus();
     }
 
     private void initLists(JComboBox list) {
-        list.setFont(new Font("Halvetica", Font.PLAIN, 18));
+        list.setFont(new Font("Halvetica", Font.PLAIN, 14));
         list.setSelectedIndex(index);
-        index = 11;
+        index = 0;
         list.setRenderer(new IconListRenderer(createIconMap()));
         list.setUI(new MetalComboBoxUI());
     }
@@ -112,6 +125,7 @@ public class Form implements ActionListener{
 
     public void start (){
         initForm();
+        convertButtonEvent();
         mainFrame.setVisible(true);
     }
 
@@ -124,14 +138,13 @@ public class Form implements ActionListener{
     public void actionPerformed(ActionEvent evt) {
         Object eventSource = evt.getSource();
         if(eventSource == switchButton) {
-            //TODO: automate convert
             int fromIndex = fromBox.getSelectedIndex();
             int toIndex =   toBox.getSelectedIndex();
             fromBox.setSelectedIndex(toIndex);
             toBox.setSelectedIndex(fromIndex);
             convertButtonEvent();
         }
-        else if(eventSource == convertButton) {
+        else if(eventSource == convertButton || eventSource == toBox || eventSource == fromBox) {
             convertButtonEvent();
         }
     }
@@ -143,7 +156,7 @@ public class Form implements ActionListener{
         String toCountry = countries[toIndex];
         double valToConvert = Double.parseDouble(fromText.getText());
         double res = calc.calcRate(fromCountry, toCountry, valToConvert);
-        System.out.println(valToConvert + "  " + fromCountry + "  to " + toCountry + "  " + res);
+//        System.out.println(valToConvert + "  " + fromCountry + "  to " + toCountry + "  " + res);
         toText.setText(new DecimalFormat("#0.00").format(res));
     }
 }

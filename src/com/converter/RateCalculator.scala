@@ -9,6 +9,7 @@ class RateCalculator(map: Map[String,Currency]) extends RateCalculatable {
 
 
   map.values.foreach(c => placeInitValue(c) )
+  rateTable(0)(0) = 1
   for (i <- 1 until map.size+1) {
     for (j <- 1 until map.size+1) {
       rateTable(i)(j) = rateTable(i)(0)*rateTable(0)(j)
@@ -39,8 +40,8 @@ class RateCalculator(map: Map[String,Currency]) extends RateCalculatable {
   }
 
   def placeInitValue (curr: Currency) = {
-    rateTable(0)(i) = 1/curr.rate
-    rateTable(i)(0) = curr.rate
+    rateTable(0)(i) = 1/(curr.rate/curr.unit)
+    rateTable(i)(0) = (curr.rate/curr.unit)
     i= i+1
   }
 

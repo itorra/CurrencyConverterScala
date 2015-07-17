@@ -19,7 +19,7 @@ public class IconListRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent
             (JList list, Object value, int index,boolean isSelected,boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list,value,index,isSelected,cellHasFocus);
-//        label.setPreferredSize(new Dimension(200,35));
+        label.setPreferredSize(new Dimension(170,38));
         Icon icon = icons.get(value);
         label.setIcon(icon);
         return label;
