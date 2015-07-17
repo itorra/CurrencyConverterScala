@@ -28,16 +28,17 @@ public class Form implements ActionListener{
     private JButton switchButton;
     private JComboBox<String> toBox;
     private JComboBox<String> fromBox;
-    private Thread parser;
+    private BOIParser parser;
     private RateCalculatable calc;
     private int index = 11;
 
     public Form() {
-        parser = new Thread(new BOIParser());
-        parser.start();
-//        calc = new RateCalculator(parser.buildMap());
-//        countries = parser.getCountries();
-//        labels = parser.getLabels();
+        parser = new BOIParser();
+        Thread t1 = new Thread(parser);
+        t1.start();
+        calc = new RateCalculator(parser.buildMap());
+        countries = parser.getCountries();
+        labels = parser.getLabels();
         mainFrame = new JFrame();
         northPanel = new JPanel();
         southPanel = new JPanel();
