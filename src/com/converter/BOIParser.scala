@@ -18,6 +18,7 @@ class BOIParser extends Runnable {
 
   def buildMap (): Map[String,Currency] = {
     val src = XML.loadFile(xmlFile)
+    date = (src\\"LAST_UPDATE").text
     println("Updated to:  " + date)
     for (curr<-src\\"CURRENCY"){
       val name = (curr\\"NAME").text
@@ -30,11 +31,6 @@ class BOIParser extends Runnable {
       map += (code -> currentCourency)
     }
     map
-  }
-
-  def parseDate(): Unit = {
-    val src = XML.loadFile(xmlFile)
-    date = (src\\"LAST_UPDATE").text
   }
 
   def getLastUpdated(): String = date
@@ -68,10 +64,9 @@ class BOIParser extends Runnable {
   var time: Int = 0
   override def run(): Unit = {
     while (true) {
-      println("Downloading File from thread")
-      downloadFile();
-      parseDate();
-    }
+      println(time)
+      time = time+ 1
+      Thread.sleep(1000)    }
 
   }
 }

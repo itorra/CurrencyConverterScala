@@ -36,6 +36,7 @@ public class Form implements ActionListener{
         parser = new BOIParser();
         Thread t1 = new Thread(parser);
         t1.start();
+        parser.downloadFile();
         calc = new RateCalculator(parser.buildMap());
         countries = parser.getCountries();
         labels = parser.getLabels();
