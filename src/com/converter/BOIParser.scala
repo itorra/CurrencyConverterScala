@@ -37,6 +37,7 @@ class BOIParser extends Runnable {
           loadLocal()
         }
         case ex: Exception => {
+          msgConsumer.consume("Connection Error - local file from: " + date )
           loadLocal()
         }
       }
@@ -65,7 +66,6 @@ class BOIParser extends Runnable {
       try {
         loadLocalXML()
         dataHandle()
-        msgConsumer.consume("Connection Error - local file from: " + date )
       } catch {
         case ex: FilerException => {
           throw new Exception("error2")

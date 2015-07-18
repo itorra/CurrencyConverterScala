@@ -20,7 +20,7 @@ public class Application {
         }
         IRateCalculatorModel calc = new RateCalculator();
         calc.start(parser.getMap());
-        Form form = new Form(calc,parser);
+        FormTest form = new FormTest(calc,parser);
         parser.setConsumer(form);
         form.start();
     }
