@@ -39,10 +39,14 @@ public class Form implements ActionListener{
 
     protected Form() {
         parser = new BOIParser();
-//        Thread t1 = new Thread(parser);
-//        t1.start();
-        parser.downloadFile();
-        calc = new RateCalculator(parser.buildMap());
+        Thread t1 = new Thread(parser);
+        t1.start();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        calc = new RateCalculator(parser.getMap());
         countries = parser.getCountries();
         labels = parser.getLabels();
         mainFrame = new JFrame();

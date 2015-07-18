@@ -1,7 +1,9 @@
 package com.converter
 
-import java.net.URL
+import java.net.{UnknownHostException, URL}
 import java.io.File
+import javax.annotation.processing.FilerException
+
 //import java.util.Map
 
 import scala.xml.XML
@@ -13,30 +15,76 @@ import sys.process._
 class BOIParser extends Runnable {
   val boiXml: String = "http://www.boi.org.il/currency.xml"
   var xmlFile: String = "data.xml"
+  var xmlTmpFile: String = "dataTmp.xml"
   var map:Map[String, Currency] = Map()
-  var date: String = "An error occured reading file"
-  downloadFile()
+  var date: String = "An error occurred reading file"
+  var src: xml.Elem = _
+  var isValidDataExist: Boolean = false
 
-  def buildMap (): Map[String,Currency] = {
-    downloadFile()
-    val src = XML.loadFile(xmlFile)
-    if (!isSameDate((src\\"LAST_UPDATE").text)) {
-      println("Updated to:  " + date)
-      for (curr<-src\\"CURRENCY"){
-        val name = (curr\\"NAME").text
-        val unit = (curr\\"UNIT").text.toInt
-        val code = (curr\\"CURRENCYCODE").text
-        val country = (curr\\"COUNTRY").text
-        val rate = (curr\\"RATE").text.toDouble
-        val change = (curr\\"CHANGE").text.toDouble
-        val currentCourency = new Currency(name,unit,code,country,rate,change)
-        map += (code -> currentCourency)
+  override def run(): Unit = { this.synchronized {
+    while (true) {
+      try {
+        loadBOIXML()
+        dataHandle()
+      } catch {
+        case ex: UnknownHostException => {
+          println("Connection Error")
+          loadLocal()
+        }
+        case ex: Exception => {
+          loadLocal()
+        }
+      }
+      try {
+        println("going to sleep for a minute")
+        Thread.sleep(60000)
+      } catch {
+        case ex: InterruptedException => {
+          println(ex)
+        }
       }
     }
-    map
+  } }
+
+  def dataHandle(): Unit = {
+    val tmpDate = (src\\"LAST_UPDATE").text
+    if ( !isSameDate(tmpDate) ) {
+      buildMap()
+      date = tmpDate
+      isValidDataExist = true
+      storeXMLFile()
+    }
+  }
+
+  def loadLocal(): Unit = {
+    if (!isValidDataExist) {
+      try {
+        loadLocalXML()
+        dataHandle()
+      } catch {
+        case ex: FilerException => throw new Exception("error2")
+      }
+    }
+  }
+
+  def getMap(): Map[String,Currency] = map
+
+  def buildMap (): Unit = {
+    for (curr<-src\\"CURRENCY"){
+      val name = (curr\\"NAME").text
+      val unit = (curr\\"UNIT").text.toInt
+      val code = (curr\\"CURRENCYCODE").text
+      val country = (curr\\"COUNTRY").text
+      val rate = (curr\\"RATE").text.toDouble
+      val change = (curr\\"CHANGE").text.toDouble
+      val currentCurrency= new Currency(name,unit,code,country,rate,change)
+      map += (code -> currentCurrency)
+    }
   }
 
   def isSameDate(rhs: String): Boolean = {
+    if (rhs.size == 0)
+      throw new Exception("error1")
     date.equals(rhs)
   }
 
@@ -64,14 +112,15 @@ class BOIParser extends Runnable {
     labels
   }
 
-  def downloadFile(): Unit = {
-    new URL(boiXml) #> new File(xmlFile) !!
+  def loadBOIXML(): Unit = {
+    src = XML.load(boiXml)
   }
 
-  var time: Int = 0
-  override def run(): Unit = {
-    while (true) {
+  def loadLocalXML(): Unit = {
+    src = XML.load(xmlFile)
+  }
 
-    }
+  def storeXMLFile(): Unit = {
+    XML.save(xmlFile,src)
   }
 }
