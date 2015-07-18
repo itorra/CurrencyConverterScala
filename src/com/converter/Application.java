@@ -1,7 +1,10 @@
 package com.converter;
 
 /**
- * Created by ido on 18/07/15.
+ * The Application class is used to run the application
+ * @version 20 Jul 2015
+ * @author Ido Algom
+ * @author Dassi Rosen
  */
 public class Application {
     public static void main(String[] args) {

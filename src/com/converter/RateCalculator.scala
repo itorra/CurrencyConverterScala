@@ -47,12 +47,5 @@ class RateCalculator(map: Map[String,Currency]) extends IRateCalculatorModel {
     i= i+1
   }
 
-  def showMotherFucker() = {
-    for (i <- 0 until rateTable.size) {
-      for (j <- 0 until rateTable.size) {
-      }
-    }
-  }
-
   override def getMatrix: Array[Array[Double]] = rateTable
 }

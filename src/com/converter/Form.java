@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Arc2D;
 import java.text.DecimalFormat;
 import java.util.*;
 import org.apache.log4j.*;
@@ -23,8 +22,6 @@ public class Form implements ActionListener{
     private JFrame mainFrame;
     private JPanel midPanel;
     private JPanel northPanel;
-    private JPanel southPanel;
-    private JPanel eastPanel;
     private JTextField fromText;
     private JTextField toText;
     private JButton convertButton;
@@ -47,16 +44,13 @@ public class Form implements ActionListener{
         labels = parser.getLabels();
         mainFrame = new JFrame();
         northPanel = new JPanel();
-        southPanel = new JPanel();
         midPanel = new JPanel();
-        eastPanel = new JPanel();
-
+        //create rate table
         String[] cols = new String[16];
         cols[0]="";
         for (int i=1; i<16; i++) {
             cols[i] = labels[i-1];
         }
-
         double[][] rateMatrix = calc.getMatrix();
         String[][] dataTable = new String[15][16];
         for(int i=0; i< rateMatrix.length; i++){
@@ -65,18 +59,6 @@ public class Form implements ActionListener{
                 dataTable[i][j+1]= new DecimalFormat("#0.0000").format(rateMatrix[i][j]);
             }
         }
-
-        for (int i=0 ; i<15; i++) {
-            for (int j=0; j<16; j++) {
-                System.out.print(dataTable[i][j] + " ");
-            }
-            System.out.print('\n');
-        }
-
-
-
-
-
         rateTable = new JTable(dataTable, cols);
         toBox = new JComboBox(labels);
         fromBox = new JComboBox(labels);
@@ -97,42 +79,52 @@ public class Form implements ActionListener{
         initLists(fromBox);
         initLists(toBox);
         //North
-        northPanel.setLayout(new FlowLayout());
-        northPanel.add(fromBox);
-        northPanel.add(switchButton);
-        northPanel.add(toBox);
+        northPanel.setLayout(new BorderLayout());
+        JPanel fromPanel = new JPanel();
+        fromPanel.setLayout(new BorderLayout());
+        JPanel toPanel = new JPanel();
+        toPanel.setLayout(new BorderLayout());
+        fromPanel.add(fromBox, BorderLayout.NORTH);
+        fromPanel.add(fromText, BorderLayout.CENTER);
+        toPanel.add(toBox, BorderLayout.NORTH);
+        toPanel.add(toText, BorderLayout.CENTER);
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        buttonsPanel.add(switchButton, gbc);
+        gbc.gridy++;
+        buttonsPanel.add(convertButton, gbc);
+        northPanel.add(fromPanel, BorderLayout.WEST);
+        northPanel.add(buttonsPanel, BorderLayout.CENTER);
+        northPanel.add(toPanel, BorderLayout.EAST);
         // Mid
-        midPanel.setLayout(new GridLayout(1, 3));
-        midPanel.add(fromText);
-        midPanel.add(toText);
-        //South
-        southPanel.setLayout(new GridLayout(2, 3));
-        southPanel.add(convertButton);
-        //southPanel.add(rateTable);
-
-        eastPanel.add(rateTable);
-
+        midPanel.setLayout(new FlowLayout());
+        Dimension tableDimension = rateTable.getPreferredSize();
+        JScrollPane tablePane = new JScrollPane(rateTable);
+        tablePane.setPreferredSize(new Dimension(tableDimension.width, rateTable.getRowHeight()*labels.length));
+        midPanel.add(tablePane);
         //// Init MainFrame
         int heightWin = 200, widthWin = 570;
-        mainFrame.setSize(widthWin,heightWin);
+        mainFrame.setSize(widthWin, heightWin);
         mainFrame.setMinimumSize(new Dimension(widthWin, heightWin));
 //        mainFrame.setMaximumSize(new Dimension(widthWin, heightWin));
-        mainFrame.setLayout(new GridLayout(3, 1));
+        mainFrame.setLayout(new BorderLayout());
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 logger.info("user closed the main frame and left the program");
                 System.exit(0);
             }
         });
-        mainFrame.add(northPanel);
-        mainFrame.add(midPanel);
-        mainFrame.add(southPanel);
-        mainFrame.add(eastPanel);
+        mainFrame.add(northPanel, BorderLayout.NORTH);
+        mainFrame.add(midPanel, BorderLayout.CENTER);
         mainFrame.setTitle("Currency converter");
         //Buttons
         switchButton.setIcon(new ImageIcon("graphics/swap_32.png"));
         switchButton.setPreferredSize(new Dimension(32, 32));
-        switchButton.setPreferredSize(new Dimension(50,50));
+        switchButton.setPreferredSize(new Dimension(50, 50));
         switchButton.setToolTipText("Swap currencies");
         //Listeners
         fromBox.addActionListener(this);
@@ -141,8 +133,8 @@ public class Form implements ActionListener{
         convertButton.addActionListener(this);
         // Text-Box
         toText.setEditable(false);
-        fromText.setFont(new Font("Halvetica",Font.BOLD,14));
-        toText.setFont(new Font("Halvetica",Font.BOLD,14));
+        fromText.setFont(new Font("Halvetica", Font.BOLD, 14));
+        toText.setFont(new Font("Halvetica", Font.BOLD, 14));
         fromText.setHorizontalAlignment(JTextField.CENTER);
         toText.setHorizontalAlignment(JTextField.CENTER);
         fromText.requestFocus();
@@ -187,19 +179,9 @@ public class Form implements ActionListener{
     public void start (){
         initForm();
         convertButtonEvent();
+        mainFrame.pack();
         mainFrame.setVisible(true);
     }
-
-    /**
-     * Instantiates a Form object and initiates the program
-     */
-
-//    public static void main(String[] args) {
-//        Form f = new Form();
-//        BasicConfigurator.configure(); // set formLogger configuration to default
-//        logger.info("client GUI was created successfully");
-//        f.start();
-//    }
 
     /**
      * Calls for a Swap between source and result labels if a click on the switch button event took place
