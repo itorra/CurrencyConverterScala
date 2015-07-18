@@ -15,22 +15,29 @@ class BOIParser extends Runnable {
   var xmlFile: String = "data.xml"
   var map:Map[String, Currency] = Map()
   var date: String = "An error occured reading file"
+  downloadFile()
 
   def buildMap (): Map[String,Currency] = {
+    downloadFile()
     val src = XML.loadFile(xmlFile)
-    date = (src\\"LAST_UPDATE").text
-    println("Updated to:  " + date)
-    for (curr<-src\\"CURRENCY"){
-      val name = (curr\\"NAME").text
-      val unit = (curr\\"UNIT").text.toInt
-      val code = (curr\\"CURRENCYCODE").text
-      val country = (curr\\"COUNTRY").text
-      val rate = (curr\\"RATE").text.toDouble
-      val change = (curr\\"CHANGE").text.toDouble
-      val currentCourency = new Currency(name,unit,code,country,rate,change)
-      map += (code -> currentCourency)
+    if (!isSameDate((src\\"LAST_UPDATE").text)) {
+      println("Updated to:  " + date)
+      for (curr<-src\\"CURRENCY"){
+        val name = (curr\\"NAME").text
+        val unit = (curr\\"UNIT").text.toInt
+        val code = (curr\\"CURRENCYCODE").text
+        val country = (curr\\"COUNTRY").text
+        val rate = (curr\\"RATE").text.toDouble
+        val change = (curr\\"CHANGE").text.toDouble
+        val currentCourency = new Currency(name,unit,code,country,rate,change)
+        map += (code -> currentCourency)
+      }
     }
     map
+  }
+
+  def isSameDate(rhs: String): Boolean = {
+    date.equals(rhs)
   }
 
   def getLastUpdated(): String = date
@@ -59,14 +66,12 @@ class BOIParser extends Runnable {
 
   def downloadFile(): Unit = {
     new URL(boiXml) #> new File(xmlFile) !!
-
   }
+
   var time: Int = 0
   override def run(): Unit = {
     while (true) {
-      println(time)
-      time = time+ 1
-      Thread.sleep(1000)    }
 
+    }
   }
 }
