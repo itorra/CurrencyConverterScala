@@ -37,16 +37,9 @@ public class Form implements ActionListener{
      * Sole client GUI constructor
      */
 
-    protected Form() {
-        parser = new BOIParser();
-        Thread t1 = new Thread(parser);
-        t1.start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        calc = new RateCalculator(parser.getMap());
+    protected Form(IRateCalculatorModel calcModel, BOIParser boiParser) {
+        this.parser = boiParser;
+        this.calc = calcModel;
         countries = parser.getCountries();
         labels = parser.getLabels();
         mainFrame = new JFrame();
@@ -164,12 +157,12 @@ public class Form implements ActionListener{
      * Instantiates a Form object and initiates the program
      */
 
-    public static void main(String[] args) {
-        Form f = new Form();
-        BasicConfigurator.configure(); // set formLogger configuration to default
-        logger.info("client GUI was created successfully");
-        f.start();
-    }
+//    public static void main(String[] args) {
+//        Form f = new Form();
+//        BasicConfigurator.configure(); // set formLogger configuration to default
+//        logger.info("client GUI was created successfully");
+//        f.start();
+//    }
 
     /**
      * Calls for a Swap between source and result labels if a click on the switch button event took place
