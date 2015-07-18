@@ -3,16 +3,15 @@ package com.converter;
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Created by ido on 26/06/15.
+ * The Form class is used to create the client GUI for the program
+ * @version 20 Jul 2015
+ * @author Ido Algom
+ * @author Dassi Rosen
  */
 
 public class Form implements ActionListener{
@@ -32,10 +31,14 @@ public class Form implements ActionListener{
     private RateCalculatable calc;
     private int index = 11;
 
-    public Form() {
+    /**
+     * Sole client GUI constructor
+     */
+
+    protected Form() {
         parser = new BOIParser();
-        Thread t1 = new Thread(parser);
-        t1.start();
+//        Thread t1 = new Thread(parser);
+//        t1.start();
         parser.downloadFile();
         calc = new RateCalculator(parser.buildMap());
         countries = parser.getCountries();
@@ -46,20 +49,22 @@ public class Form implements ActionListener{
         midPanel = new JPanel();
         toBox = new JComboBox(labels);
         fromBox = new JComboBox(labels);
-        fromText = new JTextField("1");
+        fromText = new JTextField("1.0");
         toText = new JTextField();
         convertButton = new JButton("Convert");
         switchButton = new JButton();
     }
+
+    /**
+    * Creates GUI components and adds event listeners to them
+     */
 
     private void initForm() {
         //Init comboBoxes
         initLists(fromBox);
         initLists(toBox);
         //North
-//        northPanel.setLayout(new GridLayout(1, 3));
         northPanel.setLayout(new FlowLayout());
-//        northPanel.setPreferredSize(new Dimension(650, 35));
         northPanel.add(fromBox);
         northPanel.add(switchButton);
         northPanel.add(toBox);
@@ -73,8 +78,8 @@ public class Form implements ActionListener{
         //// Init MainFrame
         int heightWin = 200, widthWin = 570;
         mainFrame.setSize(widthWin,heightWin);
-        mainFrame.setMinimumSize(new Dimension(widthWin,heightWin));
-        mainFrame.setMaximumSize(new Dimension(widthWin,heightWin));
+        mainFrame.setMinimumSize(new Dimension(widthWin, heightWin));
+        mainFrame.setMaximumSize(new Dimension(widthWin, heightWin));
         mainFrame.setLayout(new GridLayout(3, 1));
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
@@ -84,8 +89,7 @@ public class Form implements ActionListener{
         mainFrame.add(northPanel);
         mainFrame.add(midPanel);
         mainFrame.add(southPanel);
-        mainFrame.setTitle("Marco Esquandols");
-//        mainFrame.setfocus
+        mainFrame.setTitle("Currency converter");
         //Buttons
         switchButton.setIcon(new ImageIcon("graphics/swap_32.png"));
         switchButton.setPreferredSize(new Dimension(32, 32));
@@ -104,6 +108,13 @@ public class Form implements ActionListener{
         fromText.requestFocus();
     }
 
+    /**
+     * Creates the list of currency labels and flags to be shown as a dropdown menu in a comboBox
+     * @see #createIconMap
+     * @see #createIconMap
+     * @param list the comboBox component
+     */
+
     private void initLists(JComboBox list) {
         list.setFont(new Font("Halvetica", Font.PLAIN, 14));
         list.setSelectedIndex(index);
@@ -112,6 +123,11 @@ public class Form implements ActionListener{
         list.setUI(new MetalComboBoxUI());
     }
 
+    /**
+     * Pairs labels with flag icons and creates
+     * @see #initLists
+     * @return a key, value map that holds the pairs
+     */
 
     private Map<String,Icon> createIconMap() {
         Map<String,Icon> map = new HashMap<String, Icon>();
@@ -123,7 +139,10 @@ public class Form implements ActionListener{
         return map;
     }
 
-
+    /**
+     * Makes the call to initiate the client GUI and sets it to visible
+     * @see #initForm
+     */
 
     public void start (){
         initForm();
@@ -131,10 +150,21 @@ public class Form implements ActionListener{
         mainFrame.setVisible(true);
     }
 
+    /**
+     * Instantiates a Form object and initiates the program
+     */
+
     public static void main(String[] args) {
         Form f = new Form();
         f.start();
     }
+
+    /**
+     * Calls for a Swap between source and result labels if a click on the switch button event took place
+     * Calls for recalculation of the currency rate according to the new source-result set
+     * @see #convertButtonEvent
+     * @param evt
+     */
 
     @Override
     public void actionPerformed(ActionEvent evt) {
@@ -151,6 +181,10 @@ public class Form implements ActionListener{
         }
     }
 
+    /**
+     * Calls a rate calculator with the chosen source and destination
+     */
+
     void convertButtonEvent() {
         int fromIndex = fromBox.getSelectedIndex();
         int toIndex =   toBox.getSelectedIndex();
@@ -158,7 +192,6 @@ public class Form implements ActionListener{
         String toCountry = countries[toIndex];
         double valToConvert = Double.parseDouble(fromText.getText());
         double res = calc.calcRate(fromCountry, toCountry, valToConvert);
-//        System.out.println(valToConvert + "  " + fromCountry + "  to " + toCountry + "  " + res);
         toText.setText(new DecimalFormat("#0.00").format(res));
     }
 }

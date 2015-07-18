@@ -5,12 +5,15 @@ import java.awt.*;
 import java.util.Map;
 
 /**
- * Created by ido on 26/06/15.
+ * The IconListRenderer class is used to create the Map of label keys, icon values
+ * @version 20 Jul 2015
+ * @author Ido Algom
+ * @author Dassi Rosen
  */
+
 public class IconListRenderer extends DefaultListCellRenderer {
 
     private Map<String,Icon> icons = null;
-
     public IconListRenderer(Map<String, Icon> icons) {
         this.icons = icons;
     }
