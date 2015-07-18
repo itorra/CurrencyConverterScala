@@ -20,6 +20,11 @@ class BOIParser extends Runnable {
   var date: String = "An error occurred reading file"
   var src: xml.Elem = _
   var isValidDataExist: Boolean = false
+  var msgConsumer: MessageConsumer = null
+
+  def setConsumer(messageConsumer: MessageConsumer): Unit = {
+    msgConsumer = messageConsumer
+  }
 
   override def run(): Unit = { this.synchronized {
     while (true) {
@@ -36,8 +41,7 @@ class BOIParser extends Runnable {
         }
       }
       try {
-        println("going to sleep for a minute")
-        Thread.sleep(60000)
+        Thread.sleep(300000)
       } catch {
         case ex: InterruptedException => {
           println(ex)
@@ -61,8 +65,11 @@ class BOIParser extends Runnable {
       try {
         loadLocalXML()
         dataHandle()
+        msgConsumer.consume("Connection Error - local file from: " + date )
       } catch {
-        case ex: FilerException => throw new Exception("error2")
+        case ex: FilerException => {
+          throw new Exception("error2")
+        }
       }
     }
   }

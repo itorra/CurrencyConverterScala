@@ -1,5 +1,7 @@
 package com.converter;
 
+import scala.collection.Map;
+
 /**
  * The RateCalculatorModel interface defines the logic methods of the program
  * RateCalculatorModel is implemented in scala
@@ -24,5 +26,7 @@ public interface IRateCalculatorModel {
      * @return 2D array of doubles representing rates
      */
     double[][] getMatrix();
+
+    void start(Map<String, Currency> map);
 
 }

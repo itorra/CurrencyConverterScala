@@ -1,22 +1,19 @@
 package com.converter
 
 import java.lang.reflect
+import scala.collection.Map
+import java.util
 
+//
 /**
  * Created by ido on 11/07/15.
  */
-class RateCalculator(map: Map[String,Currency]) extends IRateCalculatorModel {
-  var rateTable = Array.ofDim[Double](map.size+1,map.size+1)
+class RateCalculator() extends IRateCalculatorModel {
+  var map: Map[String, Currency] = _
+  var rateTable = Array.ofDim[Double](0,0)
   var i:Int = 1
 
 
-  map.values.foreach(c => placeInitValue(c) )
-  rateTable(0)(0) = 1
-  for (i <- 1 until map.size+1) {
-    for (j <- 1 until map.size+1) {
-      rateTable(i)(j) = rateTable(i)(0)*rateTable(0)(j)
-    }
-  }
 
 
   override def calcRate(from: String, to: String, amount: Double): Double = {
@@ -48,4 +45,16 @@ class RateCalculator(map: Map[String,Currency]) extends IRateCalculatorModel {
   }
 
   override def getMatrix: Array[Array[Double]] = rateTable
+
+  override def start(imap: Map[String, Currency]): Unit = {
+    map = imap
+    rateTable = Array.ofDim[Double](map.size+1,map.size+1)
+    map.values.foreach(c => placeInitValue(c) )
+    rateTable(0)(0) = 1
+    for (i <- 1 until map.size+1) {
+      for (j <- 1 until map.size+1) {
+        rateTable(i)(j) = rateTable(i)(0)*rateTable(0)(j)
+      }
+    }
+  }
 }

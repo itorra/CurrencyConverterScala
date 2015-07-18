@@ -15,7 +15,7 @@ import org.apache.log4j.*;
  * @author Dassi Rosen
  */
 
-public class Form implements ActionListener{
+public class Form implements ActionListener, MessageConsumer{
     static Logger logger = Logger.getLogger("FormLogger.props");
     private String countries[];
     private String labels[];
@@ -227,5 +227,10 @@ public class Form implements ActionListener{
         double valToConvert = Double.parseDouble(fromText.getText());
         double res = calc.calcRate(fromCountry, toCountry, valToConvert);
         toText.setText(new DecimalFormat("#0.00").format(res));
+    }
+
+    @Override
+    public void consume(String msg) {
+        JOptionPane.showMessageDialog(new JPanel(),msg);
     }
 }

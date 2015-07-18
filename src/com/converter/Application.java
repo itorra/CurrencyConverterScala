@@ -1,5 +1,7 @@
 package com.converter;
 
+//import java.util.Map;
+
 /**
  * The Application class is used to run the application
  * @version 20 Jul 2015
@@ -16,8 +18,10 @@ public class Application {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        IRateCalculatorModel calc = new RateCalculator(parser.getMap());
+        IRateCalculatorModel calc = new RateCalculator();
+        calc.start(parser.getMap());
         Form form = new Form(calc,parser);
+        parser.setConsumer(form);
         form.start();
     }
 }
