@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.util.*;
+import org.apache.log4j.*;
 
 /**
  * The Form class is used to create the client GUI for the program
@@ -15,6 +16,7 @@ import java.util.*;
  */
 
 public class Form implements ActionListener{
+    static Logger logger = Logger.getLogger("FormLogger.props");
     private String countries[];
     private String labels[];
     private JFrame mainFrame;
@@ -156,6 +158,8 @@ public class Form implements ActionListener{
 
     public static void main(String[] args) {
         Form f = new Form();
+        BasicConfigurator.configure(); // set formLogger configuration to default
+        logger.info("client GUI was created successfully");
         f.start();
     }
 
