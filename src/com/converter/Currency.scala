@@ -1,9 +1,6 @@
 package com.converter
 
-/**
- * Created by ido on 15/06/15.
- */
-class Currency(_name: String, _unit: Int, _code: String,_country: String, _rate: Double, _change: Double) {
+class Currency(_name: String, _unit: Int, _code: String, _country: String, _rate: Double, _change: Double) {
   val name: String = _name
   val unit: Int = _unit
   val code: String = _code

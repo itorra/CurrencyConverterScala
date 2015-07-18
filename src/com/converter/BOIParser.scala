@@ -1,59 +1,58 @@
 package com.converter
 
-import java.net.{UnknownHostException, URL}
-import java.io.File
+import java.net.{UnknownHostException}
 import javax.annotation.processing.FilerException
-
-//import java.util.Map
+import org.apache.log4j.Logger;
 
 import scala.xml.XML
-import sys.process._
 
-/**
- * Created by ido on 15/06/15.
- */
 class BOIParser extends Runnable {
   val boiXml: String = "http://www.boi.org.il/currency.xml"
   var xmlFile: String = "data.xml"
   var xmlTmpFile: String = "dataTmp.xml"
-  var map:Map[String, Currency] = Map()
+  var map: Map[String, Currency] = Map()
   var date: String = "An error occurred reading file"
   var src: xml.Elem = _
   var isValidDataExist: Boolean = false
   var msgConsumer: MessageConsumer = null
+  val parserLogger = Logger.getLogger(this.getClass.getName)
 
   def setConsumer(messageConsumer: MessageConsumer): Unit = {
     msgConsumer = messageConsumer
   }
 
-  override def run(): Unit = { this.synchronized {
-    while (true) {
-      try {
-        loadBOIXML()
-        dataHandle()
-      } catch {
-        case ex: UnknownHostException => {
-          println("Connection Error")
-          loadLocal()
+  override def run(): Unit = {
+    this.synchronized {
+      while (true) {
+        try {
+          loadBOIXML()
+          dataHandle()
+        } catch {
+          case ex: UnknownHostException => {
+            parserLogger.error("Connection Error. Loading local file")
+            msgConsumer.consume("Connection Error - loading local file last updated at " + date)
+            loadLocal()
+          }
+          case ex: Exception => {
+            parserLogger.error("Download Error. Loading local file")
+            msgConsumer.consume("Error Downloading file - loading local file last updated at " + date)
+            loadLocal()
+          }
         }
-        case ex: Exception => {
-          msgConsumer.consume("Connection Error - local file from: " + date )
-          loadLocal()
-        }
-      }
-      try {
-        Thread.sleep(300000)
-      } catch {
-        case ex: InterruptedException => {
-          println(ex)
+        try {
+          Thread.sleep(300000)
+        } catch {
+          case ex: InterruptedException => {
+            parserLogger.error(ex)
+          }
         }
       }
     }
-  } }
+  }
 
   def dataHandle(): Unit = {
-    val tmpDate = (src\\"LAST_UPDATE").text
-    if ( !isSameDate(tmpDate) ) {
+    val tmpDate = (src \\ "LAST_UPDATE").text
+    if (!isSameDate(tmpDate)) {
       buildMap()
       date = tmpDate
       isValidDataExist = true
@@ -74,17 +73,17 @@ class BOIParser extends Runnable {
     }
   }
 
-  def getMap(): Map[String,Currency] = map
+  def getMap(): Map[String, Currency] = map
 
-  def buildMap (): Unit = {
-    for (curr<-src\\"CURRENCY"){
-      val name = (curr\\"NAME").text
-      val unit = (curr\\"UNIT").text.toInt
-      val code = (curr\\"CURRENCYCODE").text
-      val country = (curr\\"COUNTRY").text
-      val rate = (curr\\"RATE").text.toDouble
-      val change = (curr\\"CHANGE").text.toDouble
-      val currentCurrency= new Currency(name,unit,code,country,rate,change)
+  def buildMap(): Unit = {
+    for (curr <- src \\ "CURRENCY") {
+      val name = (curr \\ "NAME").text
+      val unit = (curr \\ "UNIT").text.toInt
+      val code = (curr \\ "CURRENCYCODE").text
+      val country = (curr \\ "COUNTRY").text
+      val rate = (curr \\ "RATE").text.toDouble
+      val change = (curr \\ "CHANGE").text.toDouble
+      val currentCurrency = new Currency(name, unit, code, country, rate, change)
       map += (code -> currentCurrency)
     }
   }
@@ -98,23 +97,23 @@ class BOIParser extends Runnable {
   def getLastUpdated(): String = date
 
   def getCountries(): Array[String] = {
-    val countries: Array[String] = new Array[String](map.size+1)
+    val countries: Array[String] = new Array[String](map.size + 1)
     countries(0) = "Israel"
     var i = 1
     map.values.foreach(curr => {
       countries(i) = curr.country
-      i = i+1
+      i = i + 1
     })
     countries
   }
 
   def getLabels(): Array[String] = {
-    val labels: Array[String] = new Array[String](map.size+1)
+    val labels: Array[String] = new Array[String](map.size + 1)
     labels(0) = "Israel Shekel"
     var i = 1
     map.values.foreach(curr => {
       labels(i) = curr.country + " " + curr.name
-      i = i+1
+      i = i + 1
     })
     labels
   }
@@ -128,6 +127,6 @@ class BOIParser extends Runnable {
   }
 
   def storeXMLFile(): Unit = {
-    XML.save(xmlFile,src)
+    XML.save(xmlFile, src)
   }
 }
