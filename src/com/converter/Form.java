@@ -30,7 +30,7 @@ public class Form implements ActionListener{
     private JComboBox<String> toBox;
     private JComboBox<String> fromBox;
     private BOIParser parser;
-    private RateCalculatable calc;
+    private IRateCalculatorModel calc;
     private int index = 11;
 
     /**
@@ -63,6 +63,8 @@ public class Form implements ActionListener{
 
     private void initForm() {
         //Init comboBoxes
+        fromBox.setToolTipText("Choose a currency to convert from");
+        toBox.setToolTipText("Choose a currency to convert to");
         initLists(fromBox);
         initLists(toBox);
         //North
@@ -85,6 +87,7 @@ public class Form implements ActionListener{
         mainFrame.setLayout(new GridLayout(3, 1));
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
+                logger.info("user closed the main frame and left the program");
                 System.exit(0);
             }
         });
@@ -96,6 +99,7 @@ public class Form implements ActionListener{
         switchButton.setIcon(new ImageIcon("graphics/swap_32.png"));
         switchButton.setPreferredSize(new Dimension(32, 32));
         switchButton.setPreferredSize(new Dimension(50,50));
+        switchButton.setToolTipText("Swap currencies");
         //Listeners
         fromBox.addActionListener(this);
         toBox.addActionListener(this);
@@ -179,8 +183,18 @@ public class Form implements ActionListener{
             fromBox.setSelectedIndex(toIndex);
             toBox.setSelectedIndex(fromIndex);
             convertButtonEvent();
+            logger.info("user clicked on switch button");
         }
-        else if(eventSource == convertButton || eventSource == toBox || eventSource == fromBox) {
+        else if(eventSource == fromBox) {
+            logger.info("user choose " + fromBox.getSelectedItem() + "as currency source");
+            convertButtonEvent();
+        }
+        else if(eventSource == toBox) {
+            logger.info("user choose " + toBox.getSelectedItem() + "as currency destination");
+            convertButtonEvent();
+        }
+        else if(eventSource == convertButton) {
+            logger.info("user clicked the convert button");
             convertButtonEvent();
         }
     }
