@@ -3,7 +3,7 @@ package com.converter
 /**
  * Created by ido on 11/07/15.
  */
-class RateCalculator(map: Map[String,Currency]) extends RateCalculatable {
+class RateCalculator(map: Map[String,Currency]) extends IRateCalculatorModel {
   var rateTable = Array.ofDim[Double](map.size+1,map.size+1)
   var i:Int = 1
 
