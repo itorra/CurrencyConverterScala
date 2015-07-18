@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Arc2D;
 import java.text.DecimalFormat;
 import java.util.*;
 import org.apache.log4j.*;
@@ -23,10 +24,12 @@ public class Form implements ActionListener{
     private JPanel midPanel;
     private JPanel northPanel;
     private JPanel southPanel;
+    private JPanel eastPanel;
     private JTextField fromText;
     private JTextField toText;
     private JButton convertButton;
     private JButton switchButton;
+    private JTable rateTable;
     private JComboBox<String> toBox;
     private JComboBox<String> fromBox;
     private BOIParser parser;
@@ -46,6 +49,35 @@ public class Form implements ActionListener{
         northPanel = new JPanel();
         southPanel = new JPanel();
         midPanel = new JPanel();
+        eastPanel = new JPanel();
+
+        String[] cols = new String[16];
+        cols[0]="";
+        for (int i=1; i<16; i++) {
+            cols[i] = labels[i-1];
+        }
+
+        double[][] rateMatrix = calc.getMatrix();
+        String[][] dataTable = new String[15][16];
+        for(int i=0; i< rateMatrix.length; i++){
+            dataTable[i][0]= labels[i];
+            for(int j=0; j<rateMatrix.length; j++) {
+                dataTable[i][j+1]= new DecimalFormat("#0.0000").format(rateMatrix[i][j]);
+            }
+        }
+
+        for (int i=0 ; i<15; i++) {
+            for (int j=0; j<16; j++) {
+                System.out.print(dataTable[i][j] + " ");
+            }
+            System.out.print('\n');
+        }
+
+
+
+
+
+        rateTable = new JTable(dataTable, cols);
         toBox = new JComboBox(labels);
         fromBox = new JComboBox(labels);
         fromText = new JTextField("1.0");
@@ -74,13 +106,17 @@ public class Form implements ActionListener{
         midPanel.add(fromText);
         midPanel.add(toText);
         //South
-        southPanel.setLayout(new GridLayout(1, 3));
+        southPanel.setLayout(new GridLayout(2, 3));
         southPanel.add(convertButton);
+        //southPanel.add(rateTable);
+
+        eastPanel.add(rateTable);
+
         //// Init MainFrame
         int heightWin = 200, widthWin = 570;
         mainFrame.setSize(widthWin,heightWin);
         mainFrame.setMinimumSize(new Dimension(widthWin, heightWin));
-        mainFrame.setMaximumSize(new Dimension(widthWin, heightWin));
+//        mainFrame.setMaximumSize(new Dimension(widthWin, heightWin));
         mainFrame.setLayout(new GridLayout(3, 1));
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
@@ -91,6 +127,7 @@ public class Form implements ActionListener{
         mainFrame.add(northPanel);
         mainFrame.add(midPanel);
         mainFrame.add(southPanel);
+        mainFrame.add(eastPanel);
         mainFrame.setTitle("Currency converter");
         //Buttons
         switchButton.setIcon(new ImageIcon("graphics/swap_32.png"));

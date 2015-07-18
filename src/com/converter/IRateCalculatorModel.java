@@ -1,5 +1,8 @@
 package com.converter;
 
+import java.lang.reflect.Array;
+import java.util.DoubleSummaryStatistics;
+
 /**
  * The RateCalculatble interface defines the logic methods of the program
  * RateCalculatble is implemented in scala
@@ -18,5 +21,6 @@ public interface IRateCalculatorModel {
      * @return the rate of the new currency times the amount
      */
     double calcRate(String from,String to,double amount);
+    double[][] getMatrix();
 
 }

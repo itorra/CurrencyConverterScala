@@ -1,5 +1,7 @@
 package com.converter
 
+import java.lang.reflect
+
 /**
  * Created by ido on 11/07/15.
  */
@@ -51,4 +53,6 @@ class RateCalculator(map: Map[String,Currency]) extends IRateCalculatorModel {
       }
     }
   }
+
+  override def getMatrix: Array[Array[Double]] = rateTable
 }
