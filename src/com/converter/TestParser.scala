@@ -46,7 +46,7 @@ class TestParser extends Runnable {
     }
   } }
 
-  def dataHandle(): Unit = {
+  def dataHandle(): Unit = { 
     val tmpDate = (src\\"LAST_UPDATE").text
     if ( !isSameDate(tmpDate) ) {
       buildMap()
