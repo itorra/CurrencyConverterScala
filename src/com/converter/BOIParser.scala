@@ -28,13 +28,13 @@ class BOIParser extends Runnable {
           loadBOIXML()
           dataHandle()
         } catch {
-          case ex: UnknownHostException => {
-            parserLogger.error("Connection Error. Loading local file")
+          case exception: UnknownHostException => {
+            parserLogger.error("Connection Error. Loading local file", exception)
             msgConsumer.consume("Connection Error - loading local file last updated at " + date)
             loadLocal()
           }
-          case ex: Exception => {
-            parserLogger.error("Download Error. Loading local file")
+          case exception: Exception => {
+            parserLogger.error("Download Error. Loading local file", exception)
             msgConsumer.consume("Error Downloading file - loading local file last updated at " + date)
             loadLocal()
           }

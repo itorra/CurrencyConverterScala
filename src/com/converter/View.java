@@ -43,7 +43,6 @@ public class View implements ActionListener, MessageConsumer {
      */
 
     protected View(IRateCalculatorModel calcModel, BOIParser boiParser) {
-        BasicConfigurator.configure();
         this.calc = calcModel;
         countries = boiParser.getCountries();
         labels = boiParser.getLabels();
@@ -214,16 +213,16 @@ public class View implements ActionListener, MessageConsumer {
             convert();
             viewLogger.info("user clicked on switch button");
         } else if (eventSource == fromBox) {
-            viewLogger.info("user chose " + fromBox.getSelectedItem() + "as currency source");
+            viewLogger.info("user chose to convert from " + fromBox.getSelectedItem());
             convert();
         } else if (eventSource == toBox) {
-            viewLogger.info("user chose " + toBox.getSelectedItem() + "as currency destination");
+            viewLogger.info("user chose to convert to " + toBox.getSelectedItem());
             convert();
         } else if (eventSource == convertButton) {
-            viewLogger.info("user clicked the convert button");
+            viewLogger.info("user clicked convert button");
             convert();
         } else if (eventSource == tableButton) {
-            viewLogger.info("user clicked the table button");
+            viewLogger.info("user clicked table button");
             tableFrame.setVisible(true);
         }
     }
