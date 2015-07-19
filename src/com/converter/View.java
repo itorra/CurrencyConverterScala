@@ -44,11 +44,11 @@ public class View implements ActionListener, MessageConsumer {
 
     protected View(IRateCalculatorModel calcModel, BOIParser boiParser) {
         this.calc = calcModel;
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         countries = boiParser.getCountries();
         labels = boiParser.getLabels();
         mainFrame = new JFrame();
