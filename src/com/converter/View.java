@@ -52,21 +52,7 @@ public class View implements ActionListener, MessageConsumer {
         midPanel = new JPanel();
         tablePanel = new JPanel();
         southPanel = new JPanel();
-        //create rate table
-        String[] cols = new String[16];
-        cols[0] = "";
-        for (int i = 1; i < 16; i++) {
-            cols[i] = labels[i - 1];
-        }
-        double[][] rateMatrix = calc.getMatrix();
-        String[][] dataTable = new String[15][16];
-        for (int i = 0; i < rateMatrix.length; i++) {
-            dataTable[i][0] = labels[i];
-            for (int j = 0; j < rateMatrix.length; j++) {
-                dataTable[i][j + 1] = new DecimalFormat("#0.0000").format(rateMatrix[i][j]);
-            }
-        }
-        rateTable = new JTable(dataTable, cols);
+        initTable(labels.length);
         toBox = new JComboBox(labels);
         fromBox = new JComboBox(labels);
         fromText = new JTextField("1.0");
@@ -148,6 +134,28 @@ public class View implements ActionListener, MessageConsumer {
         fromText.setHorizontalAlignment(JTextField.CENTER);
         toText.setHorizontalAlignment(JTextField.CENTER);
         fromText.requestFocus();
+    }
+
+    /**
+     * Initialize JTable values
+     */
+
+    private void initTable(int size) {
+        //create rate table
+        String[] cols = new String[size+1];
+        cols[0] = "";
+        for (int i = 1; i < size+1; i++) {
+            cols[i] = labels[i - 1];
+        }
+        double[][] rateMatrix = calc.getMatrix();
+        String[][] dataTable = new String[size][size+1];
+        for (int i = 0; i < rateMatrix.length; i++) {
+            dataTable[i][0] = labels[i];
+            for (int j = 0; j < rateMatrix.length; j++) {
+                dataTable[i][j + 1] = new DecimalFormat("#0.0000").format(rateMatrix[i][j]);
+            }
+        }
+        rateTable = new JTable(dataTable, cols);
     }
 
     /**

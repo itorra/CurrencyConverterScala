@@ -9,9 +9,8 @@ import scala.xml.XML
 class BOIParser extends Runnable {
   val boiXml: String = "http://www.boi.org.il/currency.xml"
   var xmlFile: String = "data.xml"
-  var xmlTmpFile: String = "dataTmp.xml"
   var map: Map[String, Currency] = Map()
-  var date: String = "An error occurred reading file"
+  var date: String = " "
   var src: xml.Elem = _
   var isValidDataExist: Boolean = false
   var msgConsumer: MessageConsumer = null
@@ -30,29 +29,42 @@ class BOIParser extends Runnable {
         } catch {
           case exception: UnknownHostException => {
             parserLogger.error("Connection Error. Loading local file", exception)
-            msgConsumer.consume("Connection Error - loading local file last updated at " + date)
-            loadLocal()
+            if (msgConsumer != null)
+              msgConsumer.consume("Connection Error - loading local file last updated at " + date)
           }
           case exception: Exception => {
-            parserLogger.error("Download Error. Loading local file", exception)
-            msgConsumer.consume("Error Downloading file - loading local file last updated at " + date)
-            loadLocal()
+            parserLogger.error("Can't read file -  Loading local file")
+            if (msgConsumer != null)
+              msgConsumer.consume("Error Downloading file - loading local file last updated at " + date)
           }
-        }
-        try {
-          Thread.sleep(300000)
-        } catch {
-          case ex: InterruptedException => {
-            parserLogger.error(ex)
+        } finally {
+          try {
+            loadLocal()
+          } catch {
+            case exception: Exception => {
+              parserLogger.fatal("No data found - Application ABORT")
+              System.exit(0)
+            }
+          }
+          try {
+            Thread.sleep(300000)
+          } catch {
+            case ex: InterruptedException => {
+              parserLogger.error(ex)
+            }
           }
         }
       }
     }
   }
 
+
   def dataHandle(): Unit = {
     val tmpDate = (src \\ "LAST_UPDATE").text
     if (!isSameDate(tmpDate)) {
+      if (isValidDataExist)
+        parserLogger.info("New Data file found")
+      parserLogger.info("Using data file updated to: " + tmpDate)
       buildMap()
       date = tmpDate
       isValidDataExist = true
@@ -66,8 +78,8 @@ class BOIParser extends Runnable {
         loadLocalXML()
         dataHandle()
       } catch {
-        case ex: FilerException => {
-          throw new Exception("error2")
+        case ex: Exception => {
+          throw new Exception("Local File not valid")
         }
       }
     }
