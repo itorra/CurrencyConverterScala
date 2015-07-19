@@ -1,16 +1,19 @@
 package com.converter
 
+import org.apache.log4j.Logger;
 import scala.collection.Map
 
 class RateCalculator() extends IRateCalculatorModel {
   var map: Map[String, Currency] = _
   var rateTable = Array.ofDim[Double](0, 0)
   var i: Int = 1
+  val calcLogger = Logger.getLogger(this.getClass.getName)
 
   override def calcRate(from: String, to: String, amount: Double): Double = {
     val fromIndex = countryToIndex(from)
     val toIndex = countryToIndex(to)
     val retVal = rateTable(fromIndex)(toIndex) * amount
+    calcLogger.info("conversion result: " + retVal)
     retVal
   }
 
