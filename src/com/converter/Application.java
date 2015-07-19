@@ -23,11 +23,6 @@ public class Application {
         BOIParser parser = new BOIParser();
         Thread thread = new Thread(parser);//continuously checks for an updated data file
         thread.start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         IRateCalculatorModel calc = new RateCalculator();
         calc.createDataBase(parser.getMap());
         View form = new View(calc, parser);

@@ -50,5 +50,4 @@ public class CurrencyConverterTest {
         assertTrue(expectedResult == result);
     }
 
-
 }

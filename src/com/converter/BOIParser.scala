@@ -1,7 +1,6 @@
 package com.converter
 
 import java.net.{UnknownHostException}
-import javax.annotation.processing.FilerException
 import org.apache.log4j.Logger;
 
 import scala.xml.XML
