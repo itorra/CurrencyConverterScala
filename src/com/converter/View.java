@@ -44,11 +44,11 @@ public class View implements ActionListener, MessageConsumer {
 
     protected View(IRateCalculatorModel calcModel, BOIParser boiParser) {
         this.calc = calcModel;
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         countries = boiParser.getCountries();
         labels = boiParser.getLabels();
         mainFrame = new JFrame();
@@ -250,6 +250,7 @@ public class View implements ActionListener, MessageConsumer {
         String fromCountry = countries[fromIndex];
         String toCountry = countries[toIndex];
         double valToConvert = Double.parseDouble(fromText.getText());
+        viewLogger.info("Converting " + valToConvert +" " + labels[fromIndex] + " to " + labels[toIndex] );
         double res = calc.calcRate(fromCountry, toCountry, valToConvert);
         toText.setText(new DecimalFormat("#0.00").format(res));
     }
