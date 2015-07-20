@@ -34,8 +34,7 @@ public class CurrencyConverterTest {
         toCurr = fromCurr;
         valToConvert = 1.0;
         double result = calculator.calcRate(fromCurr, toCurr, valToConvert);
-        double expectedResult = 1.0;
-        assertTrue("converted currency should be equal to itself", expectedResult == result);
+        assertTrue("converted currency should be equal to itself", 0.99 <= result && result <= 1.01 );
     }
 
     @Test
@@ -44,17 +43,8 @@ public class CurrencyConverterTest {
         toCurr = new String("Israel");
         valToConvert = 1.0;
         double result =  calculator.calcRate(fromCurr, toCurr, valToConvert);
-        double expectedResult = 3.789;
+        double expectedResult = 3.824;
         assertTrue(expectedResult == result);
     }
 
-    @Test
-    public void convertUSDtoYen(){
-        fromCurr = new String("USA");
-        toCurr = new String("Japan");
-        valToConvert = 1.0;
-        double result = calculator.calcRate(fromCurr, toCurr, valToConvert);
-        double expectedResult = 123.99;
-        assertTrue(expectedResult == result);
-    }
 }
