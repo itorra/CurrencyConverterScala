@@ -112,6 +112,7 @@ public class View implements ActionListener, MessageConsumer {
         mainFrame.add(midPanel);
         mainFrame.add(southPanel);
         mainFrame.setTitle("Currency converter");
+        mainFrame.getRootPane().setDefaultButton(convertButton);
         // TableFrame
         tableFrame.add(tablePanel);
         tableFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -233,7 +234,9 @@ public class View implements ActionListener, MessageConsumer {
             convert();
         } else if (eventSource == convertButton) {
             viewLogger.info("user clicked convert button");
-            convert();
+            if(validateUserInput(fromText)){
+                convert();
+            }
         } else if (eventSource == tableButton) {
             viewLogger.info("user clicked table button");
             tableFrame.setVisible(true);
@@ -253,6 +256,24 @@ public class View implements ActionListener, MessageConsumer {
         viewLogger.info("Converting " + valToConvert +" " + labels[fromIndex] + " to " + labels[toIndex] );
         double res = calc.calcRate(fromCountry, toCountry, valToConvert);
         toText.setText(new DecimalFormat("#0.00").format(res));
+    }
+
+    /**
+     * Validates user input
+     * @param input JComponent of type JTextField
+     * @return true if value is legal or false otherwise
+     */
+
+    private boolean validateUserInput(JTextField input){
+        double value = 0;
+        try {
+            value = Double.parseDouble(fromText.getText());
+            return true;
+        } catch (Exception exception) {
+            viewLogger.error("user tried to convert an invalid value");
+            consume("You are trying to convert an illegal value\n Please enter a numeral value and try again");
+            return false;
+        }
     }
 
     /**
