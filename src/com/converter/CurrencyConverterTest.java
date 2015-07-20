@@ -19,6 +19,14 @@ public class CurrencyConverterTest {
         calculator.createDataBase(parser.getMap());
     }
 
+    @Test(expected = Exception.class)
+    public void verifyExceptionThrownOnInvalidInput(){
+        fromCurr = new String("USA");
+        toCurr = new String("Israel");
+        String invalidInput = "I am an invalid input";
+        valToConvert = Double.parseDouble(invalidInput);
+        double result = calculator.calcRate(fromCurr, toCurr, valToConvert);
+    }
 
     @Test
     public void convertCurrencyToItself(){
@@ -49,5 +57,4 @@ public class CurrencyConverterTest {
         double expectedResult = 123.99;
         assertTrue(expectedResult == result);
     }
-
 }
