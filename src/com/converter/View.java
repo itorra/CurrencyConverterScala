@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.util.*;
-
 import org.apache.log4j.*;
 
 /**
@@ -21,7 +20,7 @@ public class View implements ActionListener, MessageConsumer {
     static Logger viewLogger = Logger.getLogger(View.class.getName());
     private String countries[];
     private String labels[];
-    private JFrame mainFrame;
+    final private JFrame mainFrame;
     private JPanel southPanel;
     private JPanel midPanel;
     private JPanel northPanel;
@@ -199,6 +198,7 @@ public class View implements ActionListener, MessageConsumer {
      */
 
     public void start() {
+        viewLogger.info("loading Currency Converter application...");
         initForm();
         convert();
         mainFrame.pack();
@@ -251,6 +251,14 @@ public class View implements ActionListener, MessageConsumer {
         viewLogger.info("Converting " + valToConvert +" " + labels[fromIndex] + " to " + labels[toIndex] );
         double res = calc.calcRate(fromCountry, toCountry, valToConvert);
         toText.setText(new DecimalFormat("#0.00").format(res));
+    }
+
+    /**
+     * getter
+     * @return main application frame
+     */
+    JFrame getMainFrame(){
+        return mainFrame;
     }
 
     /**

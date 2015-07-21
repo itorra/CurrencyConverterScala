@@ -9,7 +9,7 @@ public class CurrencyConverterTest {
     private String toCurr;
     private double valToConvert;
     private RateCalculator calculator;
-    private BOIParser parser ;
+    private BOIParser parser;
 
     @Before
     public void init() {
@@ -26,6 +26,14 @@ public class CurrencyConverterTest {
         String invalidInput = "I am an invalid input";
         valToConvert = Double.parseDouble(invalidInput);
         double result = calculator.calcRate(fromCurr, toCurr, valToConvert);
+
+    }
+
+    @Test
+    public void isFormVisible(){
+        View form = new View(calculator, parser);
+        form.start();
+        assertTrue("the application is showing on screen", form.getMainFrame().isDisplayable());
     }
 
     @Test
@@ -44,7 +52,16 @@ public class CurrencyConverterTest {
         valToConvert = 1.0;
         double result =  calculator.calcRate(fromCurr, toCurr, valToConvert);
         double expectedResult = 3.824;
-        assertTrue(expectedResult == result);
+        assertTrue("converted currency should be in range", expectedResult-0.2 <= result && result<= expectedResult+0.2);
     }
 
+    @Test
+    public void convertYenToUSD(){
+        fromCurr = new String("Japan");
+        toCurr = new String("USA");
+        valToConvert = 100.0;
+        double result =  calculator.calcRate(fromCurr, toCurr, valToConvert);
+        double expectedResult = 0.80;
+        assertTrue("converted currency should be in range", expectedResult-0.2 <= result && result<= expectedResult+0.2);
+    }
 }
